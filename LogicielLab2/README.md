@@ -33,11 +33,6 @@ Lancer le projet en insérant ceci (avec le bon path) dans l'invite de commandes
 ```bash
 python C:\Users\..\LogicielLab2\Logiciel_Lab2.py
 ```
-> :warning: **La commande ne marche pas:** :warning:
-
-> :warning: **AttributeError: partially initialized module 'Logiciel_Lab2' has no attribute 'initModule' ** :warning:
-
-> Peut partiellement marcher en insérant "Logiciel_Lab2.py" ligne par ligne dans l'invite de commande
 
 Dès l'apparition de la fenêtre, utiliser les touches ci-dessous pour effectuer le contrôle de la vidéo.
 
