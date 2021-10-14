@@ -26,7 +26,7 @@ pip install keyboard
 
 Compiler le projet.
 
-Ouvrez "Logiciel_Lab2" et modifier aussi le path du Debug et de la vidéo "Exemple.avi" à la ligne 4 et 10.
+Ouvrez "Logiciel_Lab2" et modifier aussi le path du Debug et de la vidéo "Exemple.avi" à la ligne 4 et 20.
 
 Lancer le projet en insérant ceci (avec le bon path) dans l'invite de commandes:
 
@@ -37,9 +37,8 @@ python C:\Users\..\LogicielLab2\Logiciel_Lab2.py
 Dès l'apparition de la fenêtre, utiliser les touches ci-dessous pour effectuer le contrôle de la vidéo.
 
 - P - Play ou Pause
-- A - Avance accélérée
+- S - Avance accélérée
 - R - Retour au début
-- S - Stop
 - Q - Quitter 
 
 ## Licence
