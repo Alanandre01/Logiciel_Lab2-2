@@ -1,21 +1,35 @@
 import sys
 import keyboard
 
-sys.path.append("C:\\Users\\alana\\Downloads\\LogicielLab2\\x64\\Debug")
+sys.path.append("C:\\Users\\abrucher\\Downloads\\Logiciel_Lab2-2-master\\x64\\Debug")
 
 import LogicielLab2
 
-#LogicielLab2.random()
+global finish
+finish = False
 
-LogicielLab2.initModule("C:\\Users\\alana\\Downloads\\LogicielLab2\\LogicielLab2\\Example.avi")
+def isFinish():
+    LogicielLab2.inputChar("q")
+    finish = True
+    
+def main():
+    
 
-#keyboard.on_press_key("p", lambda _: LogicielLab2.inputChar("p"))
-#keyboard.on_press_key("a", lambda _: LogicielLab2.inputChar("a"))
-#keyboard.on_press_key("r", lambda _: LogicielLab2.inputChar("r"))
-#keyboard.on_press_key("s", lambda _: LogicielLab2.inputChar("s"))
-#keyboard.on_press_key("q", lambda _: LogicielLab2.inputChar("q"))
+    #LogicielLab2.random()
 
-#keyboard.unhook_all()
+    LogicielLab2.initModule("C:\\Users\\abrucher\\Downloads\\Logiciel_Lab2-2-master\\LogicielLab2\\Example.avi")
 
+    keyboard.on_press_key("p", lambda _: LogicielLab2.inputChar("p"))
+    keyboard.on_press_key("r", lambda _: LogicielLab2.inputChar("r"))
+    keyboard.on_press_key("s", lambda _: LogicielLab2.inputChar("s"))
+    keyboard.on_press_key("q", lambda _: isFinish())
+
+    while(not finish):
+        pass
+
+if __name__ == "__main__":
+    main()
+ 
 #python C:\Users\alana\Downloads\LogicielLab2\LogicielLab2.py
-#pip install keyboard
+#pip install keyboard 
+#python3 C:\Users\abrucher\Downloads\Logiciel_Lab2-2-master\LogicielLab2\Logiciel_Lab2.py

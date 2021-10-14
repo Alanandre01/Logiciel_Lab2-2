@@ -53,8 +53,8 @@ void OnChar(wchar_t c)
         }
         break;
 
-    case L'a':
-    case L'A':
+    case L's':
+    case L'S':
         if (g_pPlayer->State() == STATE_RUNNING)
         {
             g_pPlayer->SetRate(2.0);
@@ -71,13 +71,13 @@ void OnChar(wchar_t c)
         }
         break;
 
-    case L's':
+    /*case L's':
     case L'S':
         if (g_pPlayer->State() == STATE_RUNNING || g_pPlayer->State() == STATE_PAUSED)
         {
             g_pPlayer->Stop();
         }
-        break;
+        break;*/
 
 
     case L'q':
