@@ -18,7 +18,7 @@ Si ce n'est pas déja fait, modifier ces propriétés
 - General -> Configuration Type = Dynamic Library (.dll)
 - Advanced -> Target File extension = .pyd
 
-Ouvrez l'invite de commande et inserez ces commandes pour installer la librairie nécéssaire.
+Ouvrez l'invite de commande et inserez cette commande pour installer la librairie nécéssaire.
 
 ```bash
 pip install keyboard
@@ -26,7 +26,7 @@ pip install keyboard
 
 Compiler le projet.
 
-Ouvrez "Logiciel_Lab2" et modifier aussi le path du Debug et de la vidéo "Exemple.avi" à la ligne 4 et 20.
+Ouvrez "Logiciel_Lab2.py" et modifier aussi le path du Debug et de la vidéo "Exemple.avi" à la ligne 4 et 20.
 
 Lancer le projet en insérant ceci (avec le bon path) dans l'invite de commandes:
 
@@ -41,10 +41,6 @@ Dès l'apparition de la fenêtre, utiliser les touches ci-dessous pour effectuer
 - R - Retour au début
 - Q - Quitter 
 
-## Licence
-
-[MIT](https://choosealicense.com/licenses/mit/)
-
 ## Sources 
 
 Librairie Keyboard: https://github.com/boppreh/keyboard#api
@@ -54,3 +50,8 @@ https://stackoverflow.com/questions/24072790/how-to-detect-key-presses
 PyObject* to String: https://docs.python.org/3/c-api/unicode.html
 
 String to LPCWSTR: https://www.codegrepper.com/code-examples/cpp/c%2B%2B+convert+const+char%2A+to+LPCWSTR
+
+## Licence
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
