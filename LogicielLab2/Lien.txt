@@ -1,0 +1,5 @@
+https://stackoverflow.com/questions/43621948/c-python-module-import-error-undefined-symbol-py-initmodule3-py-initmodu
+https://docs.microsoft.com/en-us/visualstudio/python/working-with-c-cpp-python-in-visual-studio?view=vs-2019
+https://realpython.com/build-python-c-extension-module/
+https://stackoverflow.com/questions/24661141/argument-passing-in-python-module-written-in-c
+https://www.google.com/search?q=c%2B%2B+python+extension+example&rlz=1C1CHBF_frCA919CA919&sxsrf=AOaemvLDj9uW18iKHR41iBBTjgsaqVInWQ%3A1633905581070&ei=rWtjYcHXA-Pl5NoPvvuP6AQ&oq=c%2B%2B+python+extension+example&gs_lcp=Cgdnd3Mtd2l6EAEYADIGCAAQFhAeMgYIABAWEB4yBggAEBYQHjoHCCMQsAMQJzoHCAAQRxCwA0oECEEYAFCTDViMD2CTFmgCcAJ4AIABZYgBtwGSAQMxLjGYAQCgAQHIAQnAAQE&sclient=gws-wiz
