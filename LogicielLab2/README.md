@@ -26,7 +26,7 @@ pip install keyboard
 
 Compiler le projet.
 
-Ouvrez "Logiciel_Lab2.py" et modifier aussi le path du Debug et de la vidéo "Exemple.avi" à la ligne 4 et 20.
+Ouvrez "Lab2Python.py" dans le dossier du même nom et modifier aussi le path du Debug et de la vidéo "Exemple.avi" à la ligne 4 et 20.
 
 Lancer le projet en insérant ceci (avec le bon path) dans l'invite de commandes:
 
