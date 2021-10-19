@@ -1,34 +1,29 @@
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
-
 #include <new>
 #include <windows.h>
 #include <dshow.h>
 #include <string>
 #include "playback.h"
-#include "video.h"
 
 using namespace std;
 
+//Constructeur
 DShowPlayer::DShowPlayer(string FileName) :
     m_state(STATE_NO_GRAPH),
-    //m_hwnd(hwnd),
     m_pGraph(NULL),
     m_pControl(NULL),
     m_pEvent(NULL),
-    m_pVideo(NULL),
     pSeek(NULL)
 {
     HRESULT hr = InitializeGraph(FileName);
 }
 
+//Destructeur
 DShowPlayer::~DShowPlayer()
 {
-    TearDownGraph();
+    m_pGraph->Release();
+    m_pControl->Release();
+    m_pEvent->Release();
+    pSeek->Release();
 }
 
 HRESULT DShowPlayer::Play()
@@ -76,8 +71,17 @@ HRESULT DShowPlayer::Stop()
     return hr;
 }
 
-HRESULT DShowPlayer::SetRate(double dRate)
+HRESULT DShowPlayer::SetRate()
 {
+    double dRate;
+    pSeek->GetRate(&dRate);
+
+    //Bascule entre la vitesse normale et accélérée
+    if (dRate == 1.0)
+        dRate = 2.0;
+    else 
+        dRate = 1.0;
+
     HRESULT hr = pSeek->SetRate(dRate);
     if (SUCCEEDED(hr))
     {
@@ -86,9 +90,13 @@ HRESULT DShowPlayer::SetRate(double dRate)
     return hr;
 }
 
-HRESULT DShowPlayer::SetPositions(LONGLONG* pCurrent)
+HRESULT DShowPlayer::SetPositions()
 {
-    HRESULT hr = pSeek->SetPositions(pCurrent, AM_SEEKING_RelativePositioning, NULL, AM_SEEKING_NoPositioning);
+    LONGLONG* rtNow = 0;
+    
+    HRESULT hr = pSeek->SetPositions(rtNow,
+        AM_SEEKING_RelativePositioning, NULL, AM_SEEKING_NoPositioning);
+
     if (SUCCEEDED(hr))
     {
         m_state = STATE_RUNNING;
@@ -96,65 +104,12 @@ HRESULT DShowPlayer::SetPositions(LONGLONG* pCurrent)
     return hr;
 }
 
-
-// EVR/VMR functionality
-
-BOOL DShowPlayer::HasVideo() const
-{
-    return (m_pVideo && m_pVideo->HasVideo());
-}
-
-// Sets the destination rectangle for the video.
-
-HRESULT DShowPlayer::UpdateVideoWindow(const LPRECT prc)
-{
-    if (m_pVideo)
-    {
-        return m_pVideo->UpdateVideoWindow(m_hwnd, prc);
-    }
-    else
-    {
-        return S_OK;
-    }
-}
-
-// Repaints the video. Call this method when the application receives WM_PAINT.
-
-HRESULT DShowPlayer::Repaint(HDC hdc)
-{
-    if (m_pVideo)
-    {
-        return m_pVideo->Repaint(m_hwnd, hdc);
-    }
-    else
-    {
-        return S_OK;
-    }
-}
-
-
-// Notifies the video renderer that the display mode changed.
-//
-// Call this method when the application receives WM_DISPLAYCHANGE.
-
-HRESULT DShowPlayer::DisplayModeChanged()
-{
-    if (m_pVideo)
-    {
-        return m_pVideo->DisplayModeChanged();
-    }
-    else
-    {
-        return S_OK;
-    }
-}
-
-
 // Graph building
 
 // Create a new filter graph. 
 HRESULT DShowPlayer::InitializeGraph(string FileName)
 {
+    //Convertie string en wstring (wchar* LPWSTR)
     int size;
     const WCHAR* NewFileName;
     int ssize = (int)FileName.length() + 1;
@@ -162,194 +117,51 @@ HRESULT DShowPlayer::InitializeGraph(string FileName)
     NewFileName = new WCHAR[size];
     MultiByteToWideChar(CP_ACP, 0, FileName.c_str(), ssize, (LPWSTR)NewFileName, size);
 
-    TearDownGraph();
 
     // Create the Filter Graph Manager.
     HRESULT hr = CoInitialize(NULL);
     if (FAILED(hr))
     {
         printf("ERROR - Could not initialize COM library");
-        goto done;
+        return hr;
     }
     hr = CoCreateInstance(CLSID_FilterGraph, NULL,
         CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&m_pGraph));
-
     if (FAILED(hr))
     {
-      
-        printf("ERROR - Could not create the Filter Graph Manager.");
-        
-       
-        goto done;
+        printf("ERROR - Could not create the Filter Graph Manager."); 
+        return hr;
     }
 
     hr = m_pGraph->QueryInterface(IID_PPV_ARGS(&m_pControl));
     if (FAILED(hr))
     {
         printf("ERROR1");
-        goto done;
+        return hr;
     }
 
     hr = m_pGraph->QueryInterface(IID_PPV_ARGS(&pSeek));
     if (FAILED(hr))
     {
         printf("ERROR2");
-        goto done;
+        return hr;
     }
 
     hr = m_pGraph->QueryInterface(IID_PPV_ARGS(&m_pEvent));
     if (FAILED(hr))
     {
         printf("ERROR3");
-        goto done;
+        return hr;
     }
 
     hr = m_pGraph->RenderFile(NewFileName, NULL);
+    if (FAILED(hr))
+    {
+        printf("ERROR4");
+        return hr;
+    }
+
     hr = m_pControl->Run();
     m_state = STATE_RUNNING;
     delete[] NewFileName;
-
-done:
-    
-    return hr;
-}
-
-void DShowPlayer::TearDownGraph()
-{
-    // Stop sending event messages
-    if (m_pEvent)
-    {
-        m_pEvent->SetNotifyWindow((OAHWND)NULL, NULL, NULL);
-    }
-
-    SafeRelease(&m_pGraph);
-    SafeRelease(&m_pControl);
-    SafeRelease(&m_pEvent);
-
-    delete m_pVideo;
-    m_pVideo = NULL;
-
-    m_state = STATE_NO_GRAPH;
-}
-
-
-HRESULT DShowPlayer::CreateVideoRenderer()
-{
-    HRESULT hr = E_FAIL;
-
-    enum { Try_EVR, Try_VMR9, Try_VMR7 };
-
-    for (DWORD i = Try_EVR; i <= Try_VMR7; i++)
-    {
-        switch (i)
-        {
-        case Try_EVR:
-            m_pVideo = new (std::nothrow) CEVR();
-            break;
-
-        case Try_VMR9:
-            m_pVideo = new (std::nothrow) CVMR9();
-            break;
-
-        case Try_VMR7:
-            m_pVideo = new (std::nothrow) CVMR7();
-            break;
-        }
-
-        if (m_pVideo == NULL)
-        {
-            hr = E_OUTOFMEMORY;
-            break;
-        }
-
-        hr = m_pVideo->AddToGraph(m_pGraph, m_hwnd);
-        if (SUCCEEDED(hr))
-        {
-            break;
-        }
-
-        delete m_pVideo;
-        m_pVideo = NULL;
-    }
-    return hr;
-}
-
-
-// Render the streams from a source filter. 
-
-HRESULT DShowPlayer::RenderStreams(IBaseFilter* pSource)
-{
-    BOOL bRenderedAnyPin = FALSE;
-
-    IFilterGraph2* pGraph2 = NULL;
-    IEnumPins* pEnum = NULL;
-    IBaseFilter* pAudioRenderer = NULL;
-    HRESULT hr = m_pGraph->QueryInterface(IID_PPV_ARGS(&pGraph2));
-    if (FAILED(hr))
-    {
-        goto done;
-    }
-
-    // Add the video renderer to the graph
-    hr = CreateVideoRenderer();
-    if (FAILED(hr))
-    {
-        goto done;
-    }
-
-    // Add the DSound Renderer to the graph.
-    hr = AddFilterByCLSID(m_pGraph, CLSID_DSoundRender,
-        &pAudioRenderer, L"Audio Renderer");
-    if (FAILED(hr))
-    {
-        goto done;
-    }
-
-    // Enumerate the pins on the source filter.
-    hr = pSource->EnumPins(&pEnum);
-    if (FAILED(hr))
-    {
-        goto done;
-    }
-
-    // Loop through all the pins
-    IPin* pPin;
-    while (S_OK == pEnum->Next(1, &pPin, NULL))
-    {
-        // Try to render this pin. 
-        // It's OK if we fail some pins, if at least one pin renders.
-        HRESULT hr2 = pGraph2->RenderEx(pPin, AM_RENDEREX_RENDERTOEXISTINGRENDERERS, NULL);
-
-        pPin->Release();
-        if (SUCCEEDED(hr2))
-        {
-            bRenderedAnyPin = TRUE;
-        }
-    }
-
-    hr = m_pVideo->FinalizeGraph(m_pGraph);
-    if (FAILED(hr))
-    {
-        goto done;
-    }
-
-    // Remove the audio renderer, if not used.
-    BOOL bRemoved;
-    hr = RemoveUnconnectedRenderer(m_pGraph, pAudioRenderer, &bRemoved);
-
-done:
-    SafeRelease(&pEnum);
-    SafeRelease(&pAudioRenderer);
-    SafeRelease(&pGraph2);
-
-    // If we succeeded to this point, make sure we rendered at least one 
-    // stream.
-    if (SUCCEEDED(hr))
-    {
-        if (!bRenderedAnyPin)
-        {
-            hr = VFW_E_CANNOT_RENDER;
-        }
-    }
-    return hr;
 }
