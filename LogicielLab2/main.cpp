@@ -40,7 +40,8 @@ void OnChar(wchar_t c)
     case L'R':
         if (g_pPlayer->State() == STATE_RUNNING)
         {
-            g_pPlayer->SetPositions();
+            REFERENCE_TIME rtNow = 0;
+            g_pPlayer->SetPositions(&rtNow);
 
         }
         break;
@@ -56,7 +57,8 @@ void OnChar(wchar_t c)
 //Extension python pour initlialisation du player vidéo
 static PyObject* initModule(PyObject* self, PyObject* args)
 {
-    g_pPlayer = new DShowPlayer(PyUnicode_AsUTF8(args));
+    delete g_pPlayer;
+    g_pPlayer = new (std::nothrow) DShowPlayer(PyUnicode_AsUTF8(args));
     g_pPlayer->Play();
 
     PyObject* python_val = Py_BuildValue("");
@@ -74,19 +76,19 @@ static PyObject* inputChar(PyObject* self, PyObject* args)
 
 //Création de l'extension python
 static PyMethodDef methods[] = {
-    { "initModule", (PyCFunction)initModule, METH_O, nullptr },
-    { "inputChar", (PyCFunction)inputChar, METH_O, nullptr },
+    { "initModule", (PyCFunction)initModule, METH_O, "Initialise player" },
+    { "inputChar", (PyCFunction)inputChar, METH_O, "Input des touches" },
     { nullptr, nullptr, 0, nullptr }
 };
 
-static PyModuleDef LogicielLab2 = {
+static struct PyModuleDef videoplayer = {
     PyModuleDef_HEAD_INIT,
     "LogicielLab2",         /* name of module */
-    NULL,                   /* module documentation, may be NULL */
-    0,                      /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
+    nullptr,                   /* module documentation, may be NULL */
+    -1,                      /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
     methods
 };
 
-PyMODINIT_FUNC PyInit_LogicielLab2() {
-    return PyModule_Create(&LogicielLab2);
+PyMODINIT_FUNC PyInit_LogicielLab2(void) {
+    return PyModule_Create(&videoplayer);
 }

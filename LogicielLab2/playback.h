@@ -27,7 +27,7 @@ public:
     HRESULT Pause();
     HRESULT Stop();
     HRESULT SetRate();
-    HRESULT SetPositions();
+    HRESULT SetPositions(LONGLONG* pCurrent);
 
 private:
     HRESULT InitializeGraph(string FileName);
