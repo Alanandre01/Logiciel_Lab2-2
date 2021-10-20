@@ -8,11 +8,11 @@ Laboratoire créé par Alan Brucher
 
 Pour installer le projet, utilisez le bouton "Open with Visual Studio" situé dans "Code".
 
-**Verifiez que vous utilisez Python 3.10 et êtes en Debug x64**
+**Verifiez que vous utilisez Python 3.10 et que vous êtes en Debug x64**
 
-Dans les propriétés du projet, remplacer VC++ Directories->Include et VC++ Directories->Directories pour avoir le bon path.
+Dans les propriétés du projet C++, remplacer VC++ Directories->Include et VC++ Directories->Directories pour avoir le bon path.
 
-Si ce n'est pas déja fait, modifier ces propriétés
+Si ce n'est pas déjà fait, modifier ces propriétés
 
 - General -> Target Name = LogicielLab2
 - General -> Configuration Type = Dynamic Library (.dll)
@@ -31,7 +31,7 @@ Ouvrez "Lab2Python.py" dans le dossier du même nom et modifier aussi le path du
 Lancer le projet en insérant ceci (avec le bon path) dans l'invite de commandes:
 
 ```bash
-python C:\Users\..\LogicielLab2\Logiciel_Lab2.py
+python C:\Users\...\Lab2Python\Lab2Python.py
 ```
 
 Dès l'apparition de la fenêtre, utiliser les touches ci-dessous pour effectuer le contrôle de la vidéo.
