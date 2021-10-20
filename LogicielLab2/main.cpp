@@ -42,14 +42,12 @@ void OnChar(wchar_t c)
         {
             REFERENCE_TIME rtNow = 0;
             g_pPlayer->SetPositions(&rtNow);
-
         }
         break;
 
     case L'q':
     case L'Q':
         exit(0);
-        delete g_pPlayer;
         break;
     }
 }
@@ -58,7 +56,7 @@ void OnChar(wchar_t c)
 static PyObject* initModule(PyObject* self, PyObject* args)
 {
     delete g_pPlayer;
-    g_pPlayer = new (std::nothrow) DShowPlayer(PyUnicode_AsUTF8(args));
+    g_pPlayer = new DShowPlayer(PyUnicode_AsUTF8(args));
     g_pPlayer->Play();
 
     PyObject* python_val = Py_BuildValue("");
@@ -78,7 +76,7 @@ static PyObject* inputChar(PyObject* self, PyObject* args)
 static PyMethodDef methods[] = {
     { "initModule", (PyCFunction)initModule, METH_O, "Initialise player" },
     { "inputChar", (PyCFunction)inputChar, METH_O, "Input des touches" },
-    { nullptr, nullptr, 0, nullptr }
+    { NULL, NULL, 0, NULL }
 };
 
 static struct PyModuleDef videoplayer = {

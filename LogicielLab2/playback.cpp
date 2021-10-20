@@ -76,7 +76,7 @@ HRESULT DShowPlayer::SetRate()
     double dRate;
     pSeek->GetRate(&dRate);
 
-    //Bascule entre la vitesse normale et accélérée
+    //Bascule entre la vitesse normale (1.0) et accélérée (2.0)
     if (dRate == 1.0)
         dRate = 2.0;
     else 
